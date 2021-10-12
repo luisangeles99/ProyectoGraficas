@@ -1,69 +1,141 @@
-import * as THREE from 'https://cdn.skypack.dev/three'
+// Loading
+const textureLoader = new THREE.TextureLoader();
+const normalTexture = textureLoader.load("/textures/NormalMap.png");
 
-var vertexShaderText = `
-varying vec2 v_uv;
-void main() {
-    v_uv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix *    vec4(position, 1.0);
-}`
+// Debug
+const gui = new dat.GUI();
 
-var fragmentShaderText = `
-varying vec2 v_uv;
-uniform vec2 u_mouse;
-uniform vec2 u_resolution;
-uniform vec3 u_color;
-uniform float u_time;
-void main() {
-    vec2 v = u_mouse / u_resolution;
-    vec2 uv = gl_FragCoord.xy / u_resolution;
-    gl_FragColor = vec4(1.0, 0.0, sin(u_time * 5.0) + 0.5, 1.0).rgba;
-}`
+// Scene
+const scene = new THREE.Scene();
 
-const material2 = new THREE.ShaderMaterial( {
+// Objects
+const geometry = new THREE.SphereBufferGeometry(0.5, 64, 64);
 
-uniforms: {
+// Materials
+const material = new THREE.MeshStandardMaterial();
+material.metalness = 0.7;
+material.roughness = 0.2;
+material.normalMap = normalTexture;
+material.color = new THREE.Color(0xfa693e);
 
-    time: { value: 1.0 },
-    resolution: { value: new THREE.Vector2() }
+// Mesh
+const sphere = new THREE.Mesh(geometry, material);
+scene.add(sphere);
 
-},
+// Lights
+// Light 1
+const pointLight = new THREE.PointLight(0xffffff, 0.1);
+pointLight.position.x = 2;
+pointLight.position.y = 3;
+pointLight.position.z = 4;
+scene.add(pointLight);
 
-vertexShader: vertexShaderText,
+// Light 2
+const pointLight2 = new THREE.PointLight(0xffb833, 2);
+pointLight2.position.set(3, 4.8, 3);
+pointLight2.intensity = 1.6;
+scene.add(pointLight2);
 
-fragmentShader: fragmentShaderText
+// GUI Debugger
+gui.add(pointLight2.position, "y").min(-3).max(30).step(0.01);
+gui.add(pointLight2.position, "x").min(-6).max(3).step(0.01);
+gui.add(pointLight2.position, "z").min(-3).max(3).step(0.01);
+gui.add(pointLight2, "intensity").min(0).max(10).step(0.01);
 
-} );
+/**
+ * Sizes
+ */
+const sizes = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
 
-let camera, scene, renderer;
-let geometry, material, mesh;
+// Update size object and window center on window resize
+window.addEventListener("resize", () => {
+  // Update sizes
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
 
-init();
+  // Update camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
 
-function init() {
+  // Update renderer
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
 
-    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-    camera.position.z = 1;
+/**
+ * Camera
+ */
+// Base camera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  sizes.width / sizes.height,
+  0.1,
+  100
+);
+camera.position.x = 0;
+camera.position.y = 0;
+camera.position.z = 1.5;
+scene.add(camera);
 
-    scene = new THREE.Scene();
+// Controls
+// const controls = new OrbitControls(camera, canvas)
+// controls.enableDamping = true
 
-    geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
-    material = new THREE.MeshNormalMaterial();
+/**
+ * Renderer
+ */
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    mesh = new THREE.Mesh( geometry, material2 );
-    scene.add( mesh );
+//Append renderer to html
+document.body.appendChild(renderer.domElement);
 
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.setAnimationLoop( animation );
-    document.body.appendChild( renderer.domElement );
+/**
+ * Animate
+ */
+document.addEventListener("mousemove", onDocumentMouseMove);
 
+let mouseX = 0;
+let mouseY = 0;
+
+let targetX = 0;
+let targetY = 0;
+
+const windowX = sizes.width / 2;
+const windowY = sizes.height / 2;
+
+function onDocumentMouseMove(e) {
+  mouseX = e.clientX - windowX;
+  mouseY = e.clientY - windowY;
 }
 
-function animation( time ) {
+const clock = new THREE.Clock();
 
-    mesh.rotation.x = time / 2000;
-    mesh.rotation.y = time / 1000;
+const tick = () => {
+  targetX = mouseX * 0.001;
+  targetY = mouseY * 0.001;
 
-    renderer.render( scene, camera );
+  const elapsedTime = clock.getElapsedTime();
 
-}
+  // Update objects
+  sphere.rotation.y = 0.5 * elapsedTime;
+
+  sphere.rotation.x += 0.5 * (targetY - sphere.rotation.x);
+  sphere.rotation.y += 0.05 * (targetX - sphere.rotation.y);
+  sphere.position.z -= 0.5 * (targetY - sphere.rotation.x);
+
+  // Update Orbital Controls
+  // controls.update()
+
+  // Render
+  renderer.render(scene, camera);
+
+  // Call tick again on the next frame
+  window.requestAnimationFrame(tick);
+};
+
+tick();
