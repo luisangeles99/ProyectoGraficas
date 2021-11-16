@@ -2,7 +2,8 @@ window.addEventListener("load", init, false);
 
 // Loading
 const textureLoader = new THREE.TextureLoader();
-const normalTexture = textureLoader.load("/textures/NormalMap.png");
+textureLoader.crossOrigin = true;
+const normalTexture = textureLoader.load("textures/NormalMap.png");
 
 // Debug
 const gui = new dat.GUI();
@@ -24,6 +25,22 @@ material.color = new THREE.Color(0xfa693e);
 // Mesh
 const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
+
+// Rocket
+let rocket;
+let loader = new THREE.GLTFLoader();
+  loader.crossOrigin = true;
+  loader.load( 'https://www.stivaliserna.com/assets/rocket/rocket.gltf',
+    (gltf) => {
+      rocket = gltf.scene;
+      rocket.scale.multiplyScalar(1 / 1000); 
+      rocket.position.set(-1.5,1,-.5);
+      rocket.rotation.y += 0.4;
+      rocket.rotation.z -= 2;
+      scene.add(rocket);
+    }
+);
+
 
 let pointLight, pointLight2;
 function initLights() {
@@ -126,8 +143,12 @@ const tick = () => {
   sphere.rotation.y += 0.05 * (targetX - sphere.rotation.y);
   sphere.position.z -= 0.5 * (targetY - sphere.rotation.x);
 
+  
+
+
   // Update Orbital Controls
   // controls.update()
+
 
   // Render
   renderer.render(scene, camera);
