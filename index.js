@@ -1,3 +1,5 @@
+window.addEventListener("load", init, false);
+
 // Loading
 const textureLoader = new THREE.TextureLoader();
 const normalTexture = textureLoader.load("/textures/NormalMap.png");
@@ -7,6 +9,7 @@ const gui = new dat.GUI();
 
 // Scene
 const scene = new THREE.Scene();
+let renderer;
 
 // Objects
 const geometry = new THREE.SphereBufferGeometry(0.5, 64, 64);
@@ -22,25 +25,31 @@ material.color = new THREE.Color(0xfa693e);
 const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
 
-// Lights
-// Light 1
-const pointLight = new THREE.PointLight(0xffffff, 0.1);
-pointLight.position.x = 2;
-pointLight.position.y = 3;
-pointLight.position.z = 4;
-scene.add(pointLight);
+let pointLight, pointLight2;
+function initLights() {
 
-// Light 2
-const pointLight2 = new THREE.PointLight(0xffb833, 2);
-pointLight2.position.set(3, 4.8, 3);
-pointLight2.intensity = 1.6;
-scene.add(pointLight2);
+  // Lights
+  // Light 1
+  pointLight = new THREE.PointLight(0xffffff, 0.1);
+  pointLight.position.x = 2;
+  pointLight.position.y = 3;
+  pointLight.position.z = 4;
+  scene.add(pointLight);
 
-// GUI Debugger
-gui.add(pointLight2.position, "y").min(-3).max(30).step(0.01);
-gui.add(pointLight2.position, "x").min(-6).max(3).step(0.01);
-gui.add(pointLight2.position, "z").min(-3).max(3).step(0.01);
-gui.add(pointLight2, "intensity").min(0).max(10).step(0.01);
+  // Light 2
+  pointLight2 = new THREE.PointLight(0xffb833, 2);
+  pointLight2.position.set(3, 4.8, 3);
+  pointLight2.intensity = 1.6;
+  scene.add(pointLight2);
+
+
+  // GUI Debugger
+  gui.add(pointLight2.position, "y").min(-3).max(30).step(0.01);
+  gui.add(pointLight2.position, "x").min(-6).max(3).step(0.01);
+  gui.add(pointLight2.position, "z").min(-3).max(3).step(0.01);
+  gui.add(pointLight2, "intensity").min(0).max(10).step(0.01);
+
+}
 
 /**
  * Sizes
@@ -50,54 +59,43 @@ const sizes = {
   height: window.innerHeight,
 };
 
-// Update size object and window center on window resize
-window.addEventListener("resize", () => {
-  // Update sizes
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
+let camera;
 
-  // Update camera
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
+function initCamera() {
+    /**
+   * Camera
+   */
+  // Base camera
+  camera = new THREE.PerspectiveCamera(
+    75,
+    sizes.width / sizes.height,
+    0.1,
+    100
+  );
+  camera.position.x = 0;
+  camera.position.y = 0;
+  camera.position.z = 1.5;
+  scene.add(camera);
 
-  // Update renderer
+}
+
+function initControls() {
+  // Controls
+  // const controls = new OrbitControls(camera, canvas)
+  // controls.enableDamping = true
+
+  /**
+   * Renderer
+   */
+  renderer = new THREE.WebGLRenderer({ alpha: true });
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
 
-/**
- * Camera
- */
-// Base camera
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
-  100
-);
-camera.position.x = 0;
-camera.position.y = 0;
-camera.position.z = 1.5;
-scene.add(camera);
+  //Append renderer to html
+  document.body.appendChild(renderer.domElement);
 
-// Controls
-// const controls = new OrbitControls(camera, canvas)
-// controls.enableDamping = true
+}
 
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({ alpha: true });
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-//Append renderer to html
-document.body.appendChild(renderer.domElement);
-
-/**
- * Animate
- */
-document.addEventListener("mousemove", onDocumentMouseMove);
 
 let mouseX = 0;
 let mouseY = 0;
@@ -138,4 +136,36 @@ const tick = () => {
   window.requestAnimationFrame(tick);
 };
 
-tick();
+function init() {
+  
+  // Update size object and window center on window resize
+  window.addEventListener("resize", () => {
+    // Update sizes
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    // Update camera
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  });
+
+  initCamera();
+  initControls();
+  initLights();
+
+    /**
+   * Animate
+   */
+  document.addEventListener("mousemove", onDocumentMouseMove);
+
+
+  tick();
+
+}
+
+
+
