@@ -12,7 +12,7 @@ Ejecuta el script con .
 # Descripcion de la escena
 Hacer la animación del planeta Venus y de tres satélites que lo están monitoreando. Las texturas irían en el planeta y en los objetos. Los aspectos de interacción son el control de iluminación que se encuentra arriba a la derecha del canvas y controlar la velocidad a la cual orbitan los satélites alrededor de Venus. 
 
-Para controlar la velocidad de los satélites: barra espacioda aumenta la vel; tecla s disminuye la velocidad.
+Para controlar la velocidad de los satélites: barra espaciadora aumenta la vel; tecla s disminuye la velocidad.
 
 # Ambiente de desarrollo y otras consideraciones 
 Se hará uso de la librería para diseño 3D three.js y se requiere un navegador compatible con webgl.
@@ -32,8 +32,8 @@ Autor ->uperesito Licencia ->CC-BY-4.0 (http://creativecommons.org/licenses/by/4
 Satellite - Draft XYZ Homework aka SatelliteNew.
 Autor ->Andrey Borisov  Licencia ->CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) Source ->https://sketchfab.com/3d-models/
 
-# Link a video de drive con demo de la escena
-
+# Link a carpeta de drive video y otros
+https://drive.google.com/drive/folders/1z_UbNzfw_DlrpxsZP63MWaVGBp6RSOXp?usp=sharing
 
 # Autores: 
 Luis Angeles, Adrián González, Juan Manuel 

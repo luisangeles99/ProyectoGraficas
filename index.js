@@ -114,6 +114,8 @@ let ySpeed = 0.1, xSpeed = 0.1, zSpeed = 0.1, speed = 0.001;
 let flag = false;
 let interval;
 let counter = 0, angleRot = 0.01;
+
+//event listener for changing speed of orbit
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
     let keyCode = event.which;
