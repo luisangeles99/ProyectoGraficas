@@ -119,12 +119,12 @@ function onDocumentKeyDown(event) {
     let keyCode = event.which;
     if (keyCode == 32) {
       //interval = setInterval(orbitatePlanet, 10);
-      speed += 0.001;
+      if(speed < 0.01) speed += 0.001;
       flag = true
     }else if(keyCode == 83) {
       //clearInterval(interval);
       flag = false;
-      speed -= 0.001;
+      if(speed > -0.01) speed -= 0.001;
     }
 };
 
